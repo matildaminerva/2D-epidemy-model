@@ -164,29 +164,33 @@ class Disease:
     
        
 def main(args):
-        #########################################################################
-        ## The main program where the parameters are placed by user.
-    contagion_rate = int(input("Enter the value that tells us how many individuals can one ill individual infect in a one time step. Max value is 8!: "))
+    """
+    The main program.
+    """   
     
-    diseased_time = int(input("Enter how many time steps it takes to die after you've gotten ill:" ))
-    
-    possibility_of_contagion = float(input("Enter what is the possibility that the disease is transmitted between two individuals (has to be between 0.0 and 1.0):"))
-    
-    size = int(input("Enter the size of the population:"))
-    
-    time = int(input("Enter how many time steps do we take in whole:" ))
-    
-    immune_percent = float(input("Enter what percentage of the population is immune (has to be between 0.0 and 1.0):"))
-    
-    save = input("Enter 0 if you want to save pictures and 1 if you don't wish to save them:")
-    
-    if save == 0:
-        save = True
-    elif save == 1:
-        save = False
 
-    disease = Disease(contagion_rate, diseased_time, possibility_of_contagion)
     
+contagion_rate = int(input("Enter the value that tells us how many individuals can one ill individual infect in a one time step. Max value is 8!: "))
+    
+diseased_time = int(input("Enter how many time steps it takes to die after you've gotten ill:" ))
+    
+
+possibility_of_contagion = float(input("Enter what is the possibility that the disease is transmitted between two individuals (has to be between 0.0 and 1.0):"))
+    
+size = int(input("Enter the size of the population:"))
+    
+time = int(input("Enter how many time steps do we take in whole:" ))
+    
+immune_percent = float(input("Enter what percentage of the population is immune (has to be between 0.0 and 1.0):"))
+
+save = input("Enter 0 if you want to save pictures and 1 if you don't wish to save them:")
+    
+if save == 0:
+    save = True
+elif save == 1:
+    save = False
+disease = Disease(contagion_rate, diseased_time, possibility_of_contagion)
+
     ###########################################################################
     ## Here we make a grid that is as large as the size of the population    ##
     ## and we set the immune individuals to the grid. List output is just    ##
@@ -201,66 +205,66 @@ def main(args):
     ## the graph of the amount of healthy, sick and dead individuals as a    ##
     ## function of the time step is shown.                                   ##
     ###########################################################################
+
+currentgrid = population(size) 
+
+currentgrid = set_immune(currentgrid, immune_percent)
+
+output = [] 
+x = 0
+
+healthy = [] 
+sick = [] 
+dead = [] 
+
+for i in range (0, time): 
+    nextgrid = spreading(currentgrid, disease)  
+    output.append(nextgrid)  
     
-    currentgrid = population(size) 
-    
-    currentgrid = set_immune(currentgrid, immune_percent)
-    
-    output = [] 
-    x = 0 
-    
-    healthy = [] 
-    sick = [] 
-    dead = [] 
-    
-    for i in range (0, time): 
-        nextgrid = spreading(currentgrid, disease) 
-        output.append(nextgrid)  
+    if i >= diseased_time:
+        currentgrid = dying(output[x], nextgrid) 
+        x += 1 
         
-        if i >= diseased_time: 
-            currentgrid = dying(output[x], nextgrid) 
-            x += 1 
-            
-        else: 
-             
-             currentgrid = copy.copy(nextgrid) 
-             
-        h = 0  
-        s = 0
-        d = 0     
-        for j in range(len(currentgrid[0])-1): 
-            for k in range(len(currentgrid[0])-1):
-                if currentgrid[j, k] == 0 or currentgrid[j, k] == 3:
-                    h += 1
-                    
-                elif currentgrid[j, k] == 1:
-                    s += 1
-                    
-                else:
-                    d += 1
-                    
-        healthy.append(h) 
-        sick.append(s)
-        dead.append(d)
-        
-        
-        show_grid(currentgrid, i, save) 
-        
-        
-        
-    fig=plt.figure()
-    fig.show()
-    ax=fig.add_subplot(111)
+    else: 
+         
+         currentgrid = copy.copy(nextgrid) 
+         
+    h = 0 
+    s = 0
+    d = 0     
+    for j in range(len(currentgrid[0])-1): 
+        for k in range(len(currentgrid[0])-1):
+            if currentgrid[j, k] == 0 or currentgrid[j, k] == 3:
+                h += 1
+                
+            elif currentgrid[j, k] == 1:
+                s += 1
+                
+            else:
+                d += 1
+                
+    healthy.append(h) 
+    sick.append(s)
+    dead.append(d)
     
     
-    ax.plot(healthy,c='gray',marker="^",ls='--',label='Healthy')
-    ax.plot(sick,c='orchid',marker=(8,2,0),ls='--',label='Ill')
-    ax.plot(dead,c='purple',ls='-',label='Dead')
+    show_grid(currentgrid, i, save) 
     
-    plt.legend(loc=2)
-    plt.xlabel("Time")
-    plt.ylabel("Amount of individuals")
-    plt.draw()
+    
+    
+fig=plt.figure()
+fig.show()
+ax=fig.add_subplot(111) 
+
+
+ax.plot(healthy,c='gray',marker="^",ls='--',label='Healthy')
+ax.plot(sick,c='orchid',marker=(8,2,0),ls='--',label='Ill')
+ax.plot(dead,c='purple',ls='-',label='Dead')
+
+plt.legend(loc=2)
+plt.xlabel("Time")
+plt.ylabel("Amount of individuals")
+plt.draw()
  
     
     
